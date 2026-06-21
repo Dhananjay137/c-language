@@ -1,0 +1,15 @@
+# Compiled Executables (Windows)
+*.exe
+
+# Compiled Executables (Mac/Linux)
+*.out
+*.app
+
+# Object files and Libraries
+*.o
+*.obj
+*.a
+*.lib
+
+# VS Code specific files
+.vscode/
