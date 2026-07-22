@@ -1,5 +1,5 @@
 #include<stdio.h>
-
+// Queue implementation by array
 #define MAX 10
 
 int queue[MAX];
@@ -8,6 +8,7 @@ int front = -1, rear = -1;
 void enqueue(int);
 void enqueue_at_front(int);
 void dequeue();
+void dequeue_at_end();
 int isEmpty();
 void traversal();
 void show_details();
@@ -17,14 +18,14 @@ void calculate_no_of_item();
 int main() {
 
   int choice,num;
-  printf("\n1.Enqueue\t2.Enqueue at front\t3.Dequeue\t4.Traversal\t5.Details\t6.Calculate no. of item\t7.Exit\n");
+  printf("\n1.Enqueue\t2.Enqueue at front\n3.Dequeue\t4.Dequeue at end\n5.Traversal\t6.Details\t7.Calculate no. of item\t\t8.Exit\n");
+
   do {
     printf("Choose action: ");
     scanf("%d",&choice);
     printf("--------------------------\n");
 
-    switch (choice)
-    {
+    switch (choice) {
     case 1:
       printf("Enter number: ");
       scanf("%d",&num);
@@ -41,18 +42,20 @@ int main() {
     
     case 3: dequeue(); break;
 
-    case 4: traversal(); break;
+    case 4: dequeue_at_end(); break;
 
-    case 5: show_details(); break;
+    case 5: traversal(); break;
 
-    case 6: calculate_no_of_item(); break;
+    case 6: show_details(); break;
 
-    case 7: printf("Exiting...\n"); break;
+    case 7: calculate_no_of_item(); break;
+
+    case 8: printf("Exiting...\n"); break;
 
     default:
       break;
     }
-  } while (choice != 7);
+  } while (choice != 8);
 
   return 0;
 }
@@ -101,6 +104,21 @@ void dequeue() {
     
   }
   
+}
+
+void dequeue_at_end() {
+  if (isEmpty()) {
+    printf("Queue is empty!\n");
+    return;
+  }
+  int val = queue[rear];
+
+  if (front == rear)
+    front = rear = -1;
+  else
+    rear--;
+  
+  printf("--> Dequeued from END: %d\n",val);
 }
 
 void traversal() {
