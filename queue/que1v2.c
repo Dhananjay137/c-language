@@ -126,15 +126,16 @@ void dequeue_at_rear() {
     return;
   }
   
-  // Find the node before rear
   struct node *ptr = front;
 
+  // Case: Queue is only one element
   if (front == rear) {
     front = rear = NULL;
     free(ptr);
     return;
   }
   
+  // Find the node before rear
   while (ptr->next != rear)
     ptr = ptr->next;
 
