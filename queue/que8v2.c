@@ -2,7 +2,7 @@
 // Priority Queue using array
 
 #define ROW 5 // Priority level
-#define COL 4 // Length of each queue
+#define COL 4 // Length of each queue(MAX)
 
 int queue[ROW][COL];
 int key[ROW][2]; // key[priority][0] = front, key[priority][1] = rear
@@ -13,8 +13,8 @@ void traversal();
 void show_details();
 void load();
 
-int isEmpty();
-int isFull();
+int isEmpty(int, int);
+int isFull(int, int);
 
 int main() {
   load();
@@ -45,6 +45,12 @@ void enqueue() {
   printf("Enter number & priority(0-4): ");
   scanf("%d %d",&num,&priority);
 
+  // Validate priority range before array access
+  if (priority < 0 || priority >= ROW) {
+    printf("Invalid priority! Must be between 0 and %d.\n", ROW - 1);
+    return;
+  }
+
   int front = key[priority][0];
   int rear = key[priority][1];
 
@@ -55,12 +61,12 @@ void enqueue() {
   
   if (isEmpty(front,rear)) {
     key[priority][0] = key[priority][1] = 0;
-    printf("-->empty\n");
+    //printf("-->empty\n");
   } else if (rear == COL-1 && front != 0) {
-    printf("-->start from front\n");
+    //printf("-->start from front\n");
     key[priority][1] = 0; // Set rear = 0
   } else {
-    printf("-->regular\n");
+    //printf("-->regular\n");
     key[priority][1] = rear+1;
   }
   
@@ -70,6 +76,8 @@ void enqueue() {
 
 void dequeue() {
   int front,rear,temp;
+  int dequeued = 0; // Flag to track if we removed an item
+
   for (int i = 0; i < ROW; i++) {
     front = key[i][0];
     rear = key[i][1];
@@ -77,27 +85,29 @@ void dequeue() {
     if (isEmpty(front,rear))
       continue;
 
+    temp = queue[i][front];
+    queue[i][front] = 0;
+
     if (front == rear) {
-      temp = queue[i][front];
-      queue[i][front] = 0;
-      printf("Dequeued: %d\n",temp);
-
+      // Case: Single element left in this priority queue
       key[i][0] = key[i][1] = -1;
-      break;
-    } else {
-      temp = queue[i][front];
-      queue[i][front] = 0;
-
-      if (front == COL-1) {
+    } else if (front == COL-1) {
+      // Case: Front wraps around
         key[i][0] = 0;
-      } else {
-        key[i][0] = front + 1;
-      }
-      printf("Dequeued: %d\n",temp);
-      break;
+    } else {
+      // Case: Regular advance
+      key[i][0] = front + 1;
     }
+
+    printf("Dequeued: %d\n",temp);
+    dequeued = 1;
+    break; // Stop after serving highest available priority
   }
   
+  // Handle Underflow
+  if (!dequeued) {
+    printf("All priority queues are empty!\n");
+  }
 }
 
 void show_details() {
