@@ -1,5 +1,5 @@
 #include<stdio.h>
-// Queue implementation by array
+// Queue implementation by array (Queue / Dequeue)
 #define MAX 10
 
 int queue[MAX];

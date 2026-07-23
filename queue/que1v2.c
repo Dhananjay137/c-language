@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
-// Linked Representation of Queue
+// Linked Representation of Queue (Queue / Dequeue)
 struct node
 {
   int data;
