@@ -125,6 +125,15 @@ void kahns_algo(Node *Graph[], int no_of_nodes) {
       ptr = ptr->next;
     }
   }
+
+  int processed_vertex = 0;
+  for (int i=0; i<=top; i++)
+    processed_vertex++;
+
+  if (processed_vertex < no_of_nodes) {
+    printf("Cycle exists!\n");
+    return;
+  }
   
   printf("Topological Order\n");
   for (int i=0; i<=top; i++) {
