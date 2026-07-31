@@ -17,6 +17,9 @@ void dfs(Node *Graph[], int no_of_nodes);
 void cal_indegree(Node* Graph[], int no_of_nodes, int indegree_arr[]);
 void kahns_algo(Node *Graph[], int no_of_nodes);
 
+int isCyclic(Node *Graph[], int no_of_nodes);
+int dfsCheckCycle(int node, Node* Graph[], int visited[]);
+
 void enqueue(int *front, int *rear, int arr[], int val);
 
 int main() {
@@ -44,6 +47,14 @@ int main() {
 
   // Topological Sort
   kahns_algo(Graph, total_no_of_nodes);
+
+  // Check is cyclic by dfs
+  int flag = isCyclic(Graph, total_no_of_nodes);
+
+  if (flag)
+    printf("Cycle exists!\n");
+  else
+    printf("Cycle not exists\n");
 
   // for (int i = 0; i < total_no_of_nodes ; i++)
   //   printf("indegree[%d] = %d\n",i,indegree_arr[i]);
@@ -140,6 +151,54 @@ void kahns_algo(Node *Graph[], int no_of_nodes) {
     printf("%d -> ",topological_order[i]);
   }
   printf("NULL\n");
+}
+
+int isCyclic(Node *Graph[], int no_of_nodes) {
+  // 1. INITIALIZE VISITED TRACKER (0 = Unvisited)
+  int visited[no_of_nodes];
+  for (int i = 0; i < no_of_nodes; i++) {
+    visited[i] = 0;
+  }
+
+  // 2. RUN DFS FOR EVERY COMPONENT (Handles disconnected sub-graphs)
+  for (int i = 0; i < no_of_nodes; i++) {
+    if (visited[i] == 0) {
+      if (dfsCheckCycle(i, Graph, visited)) {
+        return 1; // A cycle was detected anywhere in the graph
+      }
+    }
+  }
+    
+  return 0; // Safely checked all nodes, no cycle exists
+}
+
+// HELPER FUNCTION FOR DFS TRACKING
+int dfsCheckCycle(int node, Node* Graph[], int visited[]) {
+  // State 1: Currently visiting (active in the recursion path)
+  visited[node] = 1;
+
+  Node* ptr = Graph[node];
+  while (ptr != NULL) {
+    int neighbor = ptr->data;
+
+    // If neighbor is in State 1, we hit an active node -> CYCLE FOUND!
+    if (visited[neighbor] == 1) {
+      return 1;
+    }
+
+    // If neighbor is unvisited (State 0), explore its path recursively
+    if (visited[neighbor] == 0) {
+      if (dfsCheckCycle(neighbor, Graph, visited)) {
+        return 1;
+      }
+    }
+        
+    ptr = ptr->next;
+  }
+
+  // State 2: Fully processed (all branches from this node are safe)
+  visited[node] = 2;
+  return 0;
 }
 
 void enqueue(int *front, int *rear, int arr[], int val) {
