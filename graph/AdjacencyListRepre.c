@@ -14,6 +14,9 @@ Node *create_node(int data);          // returns pointer
 void bfs(Node *Graph[], int no_of_nodes);
 void dfs(Node *Graph[], int no_of_nodes);
 
+void cal_indegree(Node* Graph[], int no_of_nodes, int indegree_arr[]);
+void kahns_algo(Node *Graph[], int no_of_nodes);
+
 void enqueue(int *front, int *rear, int arr[], int val);
 
 int main() {
@@ -36,8 +39,15 @@ int main() {
   display_adj_list(Graph, total_no_of_nodes);
   
   // Traversal
-  bfs(Graph, total_no_of_nodes);
-  dfs(Graph, total_no_of_nodes);
+  // bfs(Graph, total_no_of_nodes);
+  // dfs(Graph, total_no_of_nodes);
+
+  // Topological Sort
+  kahns_algo(Graph, total_no_of_nodes);
+
+  // for (int i = 0; i < total_no_of_nodes ; i++)
+  //   printf("indegree[%d] = %d\n",i,indegree_arr[i]);
+  
 
   // Free memory
   for (int i = 0; i < total_no_of_nodes; i++) {
@@ -62,6 +72,65 @@ Node *create_node(int data) {
   new_node->next = NULL;
 
   return new_node;
+}
+
+void cal_indegree(Node* Graph[], int no_of_nodes, int indegree_arr[]) {
+  Node* ptr;
+
+  for (int i=0; i<no_of_nodes; i++)
+    indegree_arr[i] = 0;
+
+  for (int i=0; i<no_of_nodes; i++) {
+    ptr = Graph[i];
+    while (ptr != NULL) {
+      indegree_arr[ptr->data]++;
+      ptr = ptr->next;
+    }
+    
+  }
+}
+
+void kahns_algo(Node *Graph[], int no_of_nodes) {
+  int queue[no_of_nodes], front = -1, rear = -1;
+  int indegree_arr[no_of_nodes], topological_order[no_of_nodes], top = -1;
+
+  // 1. Calculate indegeree
+  cal_indegree(Graph, no_of_nodes,indegree_arr);
+
+  // 2. ENQUEUE all vertex-i with indegree = 0 in queue
+  for (int i=0; i<no_of_nodes; i++) {
+    if (indegree_arr[i] == 0) {
+      enqueue(&front, &rear, queue, i);
+    }
+  }
+
+  // 3. Loop runs until the queue is completely empty
+  while (front <= rear && front != -1) {
+
+    // Take out vertex from front of the queue
+    int current_vertex = queue[front++];
+
+    // Add current vertex to topological order
+    topological_order[++top] = current_vertex;
+
+    // Reduce the indegree by 1 of neighbor's
+    Node* ptr = Graph[current_vertex];
+    while (ptr != NULL) {
+      indegree_arr[ptr->data]--;
+
+      if (indegree_arr[ptr->data] == 0) {
+        // If any neighbor’s indegree becomes 0, ENQUEUE it into the queue.
+        enqueue(&front, &rear, queue, ptr->data);
+      }
+      ptr = ptr->next;
+    }
+  }
+  
+  printf("Topological Order\n");
+  for (int i=0; i<=top; i++) {
+    printf("%d -> ",topological_order[i]);
+  }
+  printf("NULL\n");
 }
 
 void enqueue(int *front, int *rear, int arr[], int val) {
