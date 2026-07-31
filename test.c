@@ -35,11 +35,14 @@ int foo2(int val );
 int bar2(int val );
 
 int main() {
+  int arr[] = {10,9,8,5};
+
+  printf("%d",*(arr + 1));
   // int v =foo2(3);
   // printf("\nv: %d",v);
 
-  int v2 = bar2(3);
-  printf("\nv: %d",v2);
+  // int v2 = bar2(3);
+  // printf("\nv: %d",v2);
   
   return 0;
 }

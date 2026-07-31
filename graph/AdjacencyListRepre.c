@@ -6,16 +6,18 @@ typedef struct Node {
   struct Node *next;
 } Node;
 
-void create_graph(Node *Graph[], int no_of_nodes);
+void create_graph(Node *Graph[], int total_no_of_nodes, int total_no_of_edges);
 void display_adj_list(Node *Graph[], int no_of_nodes);
 void add_edge(Node *Graph[], int source, int destination);
 Node *create_node(int data);          // returns pointer
-void bfs(Node *Graph[], int no_of_nodes, int visited[]);
+
+void bfs(Node *Graph[], int no_of_nodes);
+void dfs(Node *Graph[], int no_of_nodes);
+
 void enqueue(int *front, int *rear, int arr[], int val);
 
 int main() {
   int total_no_of_nodes, total_no_of_edges;
-  int source, destination;
 
   printf("Enter total nodes in graph: ");
   scanf("%d", &total_no_of_nodes);
@@ -26,30 +28,16 @@ int main() {
   // 0-based indexing: Graph[0] ... Graph[n-1]
   Node *Graph[total_no_of_nodes];
 
-  create_graph(Graph, total_no_of_nodes);
-
-  for (int i = 0; i < total_no_of_edges; i++) {
-    printf("Enter Source & Destination (0-based): ");
-    scanf("%d %d", &source, &destination);
-
-    // basic range check
-    if (source < 0 || source >= total_no_of_nodes ||
-      destination < 0 || destination >= total_no_of_nodes) {
-      printf("Invalid node number! Skipping this edge.\n");
-      continue;
-    }
-
-    add_edge(Graph, source, destination);
-  }
-
+  // Create Graph
+  create_graph(Graph, total_no_of_nodes, total_no_of_edges);
+  
+  // Print Adjacency List
   printf("\nAdjacency List:\n");
   display_adj_list(Graph, total_no_of_nodes);
-
-  int visited[total_no_of_nodes];
-  for (int i = 0; i < total_no_of_nodes; i++)
-    visited[i] = 0;
   
-  bfs(Graph, total_no_of_nodes, visited);
+  // Traversal
+  bfs(Graph, total_no_of_nodes);
+  dfs(Graph, total_no_of_nodes);
 
   // Free memory
   for (int i = 0; i < total_no_of_nodes; i++) {
@@ -85,10 +73,14 @@ void enqueue(int *front, int *rear, int arr[], int val) {
   arr[*rear] = val;
 }
 
-void bfs(Node *Graph[], int no_of_nodes, int visited[]) {
-  int source = 0;
+void bfs(Node *Graph[], int no_of_nodes) {
+  int source = 0, destination;
   int queue[no_of_nodes], front = -1, rear = -1;
-  int destination;
+  int visited[no_of_nodes];
+
+  // Initalize Visited array
+  for (int i = 0; i < no_of_nodes; i++)
+    visited[i] = 0;
 
   printf("Enter destination (0 to %d): ",no_of_nodes-1);
   scanf("%d",&destination);
@@ -131,10 +123,73 @@ void bfs(Node *Graph[], int no_of_nodes, int visited[]) {
   return;
 }
 
-void create_graph(Node *Graph[], int no_of_nodes) {
-  for (int i = 0; i < no_of_nodes; i++) {
+void dfs(Node *Graph[], int no_of_nodes) {
+  int source = 0, destination;
+  int stack[no_of_nodes], top = -1;
+  Node *ptr;
+  int visited[no_of_nodes];
+
+  // Initalize Visited array
+  for (int i = 0; i < no_of_nodes; i++)
+    visited[i] = 0;
+
+  printf("Enter destination (0 to %d): ",no_of_nodes-1);
+  scanf("%d",&destination);
+
+  // 1. PUSH source in stack
+  stack[++top] = source;
+
+  // 2. Loop runs until the stack is completely empty
+  while (top != -1) {
+    
+    // POPPED the current vertex
+    int current_vertex = stack[top--];
+    visited[current_vertex] == 1;
+
+    // Check current vertex == destination
+    if (current_vertex == destination) {
+      printf("\nFound destination %d!\n", destination);
+      return;
+    }
+
+    // 3. Move ptr to the neighbors of the POPPED node
+    ptr = Graph[current_vertex];
+
+    while (ptr != NULL) {
+      // PUSH neighobur on stack
+      if (visited[ptr->data] == 0) {
+        stack[++top] = ptr->data;
+      }
+      ptr = ptr->next;
+    }
+  }
+
+  printf("\nDestination %d not reachable from source.\n", destination);
+
+  return;
+}
+
+void create_graph(Node *Graph[], int total_no_of_nodes, int total_no_of_edges) {
+  int source, destination;
+
+  for (int i = 0; i < total_no_of_nodes; i++) {
     Graph[i] = NULL;
   }
+
+  for (int i = 0; i < total_no_of_edges; i++) {
+    printf("Enter Source & Destination (0-based): ");
+    scanf("%d %d", &source, &destination);
+
+    // basic range check
+    if (source < 0 || source >= total_no_of_nodes ||
+      destination < 0 || destination >= total_no_of_nodes) {
+      printf("Invalid node number! Skipping this edge.\n");
+      continue;
+    }
+
+    add_edge(Graph, source, destination);
+  }
+
 }
 
 void add_edge(Node *Graph[], int source, int destination) {
